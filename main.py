@@ -8,31 +8,29 @@ class Fish:
         self.is_aggressive = is_aggressive
         self.needed_space = needed_space
 
-    def __str__(self):
-        return f"{self.name}: {self.size} cubic meters"
-
 
 class Aquarium:
     def __init__(self, total_volume):
         self.total_volume = total_volume
         self.free_space = total_volume
-        self.fish_list = []
+        self.aggressive_fish = []
+        self.non_aggressive_fish = []
 
     def add_fish(self, fish):
-        if self.free_space >= fish.needed_space and len(self.fish_list) < 3:
-            self.fish_list.append(fish)
+        if fish.is_aggressive is True and self.free_space >= fish.needed_space:
+            self.aggressive_fish.append(fish)
             self.free_space -= fish.needed_space
-            return True
-        else:
-            return False
+        elif fish.is_aggressive is False and self.free_space >= fish.needed_space:
+            self.non_aggressive_fish.append(fish)
+            self.free_space -= fish.needed_space
 
     def get_top_three_largest_fish(self):
-        sorted_fish = sorted(self.fish_list, key=lambda x: x.size, reverse=True)
-        return sorted_fish[:3]
+        self.aggressive_fish.sort(key=lambda x: x.size, reverse=True)
+        self.non_aggressive_fish.sort(key=lambda x: x.size, reverse=True)
 
 
 def main():
-    aquarium1 = Aquarium(50)
+    aquarium1 = Aquarium(4)
     aquarium2 = Aquarium(30)
 
     fish1 = Fish("Nemo", 2, "Clownfish", 0.1, "Plankton", False, 0.5)
@@ -43,24 +41,23 @@ def main():
     fish6 = Fish("Speedy", 2, "Guppy", 0.02, "Fish Flakes", True, 0.1)
     fish7 = Fish("Fluffy", 3, "Angelfish", 0.3, "Worms", False, 0.5)
 
-    aquarium1.add_fish(fish1)
-    aquarium1.add_fish(fish2)
-    aquarium1.add_fish(fish3)
+    fish_list = (fish1, fish2, fish3, fish4, fish5, fish6, fish7)
+    for fish in fish_list:
+        if fish.is_aggressive:
+            aquarium2.add_fish(fish)
+        else:
+            aquarium1.add_fish(fish)
 
-    aquarium2.add_fish(fish4)
-    aquarium2.add_fish(fish5)
-    aquarium2.add_fish(fish6)
-    aquarium2.add_fish(fish7)
+    aquarium1.get_top_three_largest_fish()
+    aquarium2.get_top_three_largest_fish()
 
-    print("\nTop 3 largest fish in Aquarium 1:")
-    top_three_aquarium1 = aquarium1.get_top_three_largest_fish()
-    for fish in top_three_aquarium1:
-        print(fish)
+    print("Fish in Aquarium 1:")
+    for fish in aquarium1.non_aggressive_fish[:3]:
+        print(f"{fish.name}: {fish.size} cubic meters")
 
-    print("\nTop 3 largest fish in Aquarium 2:")
-    top_three_aquarium2 = aquarium2.get_top_three_largest_fish()
-    for fish in top_three_aquarium2:
-        print(fish)
+    print("\nFish in Aquarium 2:")
+    for fish in aquarium2.aggressive_fish[:3]:
+        print(f"{fish.name}: {fish.size} cubic meters")
 
 
 if __name__ == "__main__":
